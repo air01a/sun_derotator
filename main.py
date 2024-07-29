@@ -95,7 +95,6 @@ while True:
         config['DEFAULT']['Directory'] = directory
         write_config(config)
         
-        print(sg.cprint)
         run(directory, float(latitude), float(longitude),sg.cprint)
 
 
