@@ -21,3 +21,4 @@ Enjoy the result :
 ![image GUI](./images/gui.png)
 
 ![image SUN](./images/2024.07.28_Soleil_PDS130.png)
+(protuberances are copied from helios website for composite image)
