@@ -1,0 +1,4 @@
+numpy
+astropy
+pillow
+git+https://github.com/air01a/PySimpleGUI-4-foss.git
