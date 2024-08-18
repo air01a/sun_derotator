@@ -25,14 +25,14 @@ def write_config(config):
         config.write(configfile)
 
 
-def calculate_rotation(time_utc, location, lat, lon):
+def calculate_rotation_speed(time_utc, location, lat, lon):
     time = Time(time_utc)
     time.location=location
     sun = get_sun(time)
     altaz = AltAz(obstime=time, location=location)
     sun_altaz = sun.transform_to(altaz)
-    rotation = (np.cos(lat * u.deg)  * np.cos(float(sun_altaz.az.radian))) / np.cos(float(sun_altaz.alt.radian))
-    return rotation*180/np.pi
+    rotation = (np.cos(lat * u.deg)  * np.cos(float(sun_altaz.az.radian))) / np.cos(float(sun_altaz.alt.radian)) *15.0410
+    return rotation #*180/np.pi
 
 def rotate_image(image_path, rotation_angle):
     image = Image.open(image_path)
@@ -49,17 +49,19 @@ def run(path, lat, lon, writelog):
                 date_hour_str = file.split('.')[0].split('_')[0]
                 date_hour = datetime.strptime(date_hour_str, '%Y-%m-%d-%H%M')
                 date_utc_str = date_hour.strftime('%Y-%m-%dT%H:%M:00')
-                files_dates.append((file, date_utc_str))
+
+                files_dates.append((file, date_hour, date_utc_str))
             except ValueError:
                 writelog(f'Le fichier {file} ne correspond pas au format attendu.')
+    
+    file_path,initial_time_utc, time_str = files_dates.pop(0)
+    rotation_angle_speed = calculate_rotation_speed(initial_time_utc, location, lat, lon)
 
-    for file_path,time_utc in files_dates:
+    for file_path,time_utc, time_str in files_dates:
         writelog("++++++++ Start",colors='white on green')
-        rotation_angle = calculate_rotation(time_utc, location, lat, lon)
-        if first_rotation==-1:
-            first_rotation=rotation_angle
-        rotation_angle=rotation_angle-first_rotation
-        rotate_image(path+'/'+file_path, rotation_angle/2)
+        rotation_angle=(time_utc-initial_time_utc).total_seconds()/3600 * rotation_angle_speed
+        
+        rotate_image(path+'/'+file_path, -rotation_angle)
         writelog(f"Applied a rotation of {rotation_angle:.2f} degrees to {file_path}")
 
     writelog("Rotation correction applied to all images.")
