@@ -61,6 +61,7 @@ def run(path, lat, lon, writelog):
         writelog("++++++++ Start",colors='white on green')
         rotation_angle=(time_utc-initial_time_utc).total_seconds()/3600 * rotation_angle_speed
         
+        
         rotate_image(path+'/'+file_path, -rotation_angle)
         writelog(f"Applied a rotation of {rotation_angle:.2f} degrees to {file_path}")
 
